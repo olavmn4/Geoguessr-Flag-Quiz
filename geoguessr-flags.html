@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Flag Quiz – Sporcle Style</title>
+  <style>
+    body { font-family: Arial, sans-serif; padding: 20px; }
+    h1 { text-align: center; }
+    #inputBox { width: 300px; padding: 10px; font-size: 1rem; display: block; margin: 0 auto 20px auto; }
+    .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 20px; }
+    .flagBox { text-align: center; font-size: 0.9rem; }
+    .flagBox img { width: 100%; height: 80px; object-fit: contain; border: 1px solid #ccc; }
+    .correct { background-color: #c8f7c5; }
+  </style>
+</head>
+<body>
+  <h1>Sporcle‑Style Flag Quiz</h1>
+  <input id="inputBox" placeholder="Type a country name…" oninput="checkInput()" />
+  <div class="grid" id="flagGrid"></div>
+
+  <script>
+    const flags = {
+      "Botswana":"bw","Egypt":"eg","Eswatini":"sz","Ghana":"gh","Kenya":"ke","Lesotho":"ls","Madagascar":"mg","Mali":"ml","Namibia":"na","Nigeria":"ng","Réunion":"re","Rwanda":"rw","São Tomé and Príncipe":"st","Senegal":"sn","South Africa":"za","Tanzania":"tz","Tunisia":"tn","Uganda":"ug",
+      "Afghanistan":"af","Bangladesh":"bd","Bhutan":"bt","British Indian Ocean Territory":"io","Cambodia":"kh","China":"cn","Christmas Island":"cx","Cocos (Keeling) Islands":"cc","Hong Kong":"hk","India":"in","Indonesia":"id","Iraq":"iq","Israel":"il","Japan":"jp","Jordan":"jo","Kazakhstan":"kz","Kyrgyzstan":"kg","Laos":"la","Lebanon":"lb","Macao":"mo","Malaysia":"my","Mongolia":"mn","Nepal":"np","Oman":"om","Pakistan":"pk","Palestine":"ps","Philippines":"ph","Qatar":"qa","Russia":"ru","Singapore":"sg","South Korea":"kr","Sri Lanka":"lk","Syria":"sy","Taiwan":"tw","Thailand":"th","United Arab Emirates":"ae","Vietnam":"vn",
+      "Åland":"ax","Albania":"al","Andorra":"ad","Austria":"at","Belarus":"by","Belgium":"be","Bosnia and Herzegovina":"ba","Bulgaria":"bg","Croatia":"hr","Cyprus":"cy","Czech Republic":"cz","Denmark":"dk","Estonia":"ee","Faroe Islands":"fo","Finland":"fi","France":"fr","Germany":"de","Gibraltar":"gi","Greece":"gr","Hungary":"hu","Iceland":"is","Ireland":"ie","Isle of Man":"im","Italy":"it","Jersey":"je","Latvia":"lv","Liechtenstein":"li","Lithuania":"lt","Luxembourg":"lu","Malta":"mt","Monaco":"mc","Montenegro":"me","Netherlands":"nl","North Macedonia":"mk","Norway":"no","Poland":"pl","Portugal":"pt","Romania":"ro","San Marino":"sm","Serbia":"rs","Slovakia":"sk","Slovenia":"si","Spain":"es","Svalbard and Jan Mayen":"sj","Sweden":"se","Switzerland":"ch","Turkey":"tr","Ukraine":"ua","United Kingdom":"gb",
+      "Bermuda":"bm","Canada":"ca","Costa Rica":"cr","Curaçao":"cw","Dominican Republic":"do","Greenland":"gl","Guatemala":"gt","Martinique":"mq","Mexico":"mx","Panama":"pa","Puerto Rico":"pr","Saint Pierre and Miquelon":"pm","United States":"us","United States Virgin Islands":"vi",
+      "American Samoa":"as","Australia":"au","Guam":"gu","New Zealand":"nz","Northern Mariana Islands":"mp","Pitcairn Islands":"pn","United States Minor Outlying Islands":"um","Vanuatu":"vu",
+      "Argentina":"ar","Bolivia":"bo","Brazil":"br","Chile":"cl","Colombia":"co","Ecuador":"ec","Falkland Islands":"fk","Paraguay":"py","Peru":"pe","South Georgia and the South Sandwich Islands":"gs","Uruguay":"uy"
+    };
+
+    const grid = document.getElementById("flagGrid");
+    // Use population-sorted list **but include ALL countries** by filtering flags
+let populationOrder = [
+  "China","India","United States","Indonesia","Pakistan","Brazil","Nigeria","Bangladesh","Russia","Mexico","Japan","Philippines","Egypt","Vietnam","Turkey","Germany","United Kingdom","France","Italy","South Africa","South Korea","Colombia","Spain","Argentina","Ukraine","Malaysia","Nepal","Canada","Australia","Taiwan","Sri Lanka","Kazakhstan","Netherlands","Chile","Guatemala","Ecuador","Cambodia","Jordan","Hungary","Belarus","Sweden","United Arab Emirates","Austria","Switzerland","Hong Kong","Serbia","Israel","Laos","Bulgaria","Lebanon","Paraguay","Singapore","Denmark","Finland","Slovakia","Norway","Oman","Ireland","New Zealand","Costa Rica","Panama","Croatia","Uruguay","Mongolia","Lithuania","Qatar","Botswana","Namibia","Lesotho","Slovenia","North Macedonia","Latvia","Estonia",
+  "Réunion","Faroe Islands","Greenland","Åland","Isle of Man","Jersey","Guam","Curaçao","Bermuda","American Samoa","Martinique","Puerto Rico","Saint Pierre and Miquelon","Falkland Islands","Pitcairn Islands",
+  "Eswatini","Rwanda","São Tomé and Príncipe","Senegal","Tanzania","Tunisia","Uganda","Afghanistan","Bhutan","British Indian Ocean Territory","Christmas Island","Cocos (Keeling) Islands","Macao","Portugal","Czech Republic","Belgium","Iceland","Gibraltar","San Marino","Svalbard and Jan Mayen","Liechtenstein","Monaco","Andorra","Malta"
+];
+
+// Now ensure all flags exist in the final list
+const countries = populationOrder.filter(c => flags[c]).concat(
+  Object.keys(flags).filter(c => !populationOrder.includes(c))
+);
+    const remaining = new Set(countries.map(c => c.toLowerCase()));
+
+    function buildGrid() {
+      for (const c of countries) {
+        const div = document.createElement("div");
+        div.className = "flagBox";
+        div.id = "box-" + c.toLowerCase();
+        div.innerHTML = `<img src="https://flagcdn.com/w320/${flags[c]}.png"><br><span>???</span>`;
+        grid.appendChild(div);
+      }
+    }
+
+    function checkInput() {
+      const text = document.getElementById("inputBox").value.trim().toLowerCase();
+      if (remaining.has(text)) {
+        remaining.delete(text);
+        const box = document.getElementById("box-" + text);
+        if (box) {
+          box.classList.add("correct");
+          box.querySelector("span").textContent = countries.find(c => c.toLowerCase() === text);
+        }
+        document.getElementById("inputBox").value = "";
+      }
+    }
+
+    buildGrid();
+  </script>
+</body>
+</html>
